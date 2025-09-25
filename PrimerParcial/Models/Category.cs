@@ -12,6 +12,7 @@ namespace PrimerParcial.Models
 
         [StringLength(200)]
         public string? Description { get; set; }
+        // 
 
         
         public List<Recipe> Recipes { get; set; } = new();

@@ -1,20 +1,29 @@
 using Microsoft.EntityFrameworkCore;
+using PrimerParcial.Data; 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// MVC
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<PrimerParcial.Data.RecetasDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default_Connection")));
+// EF Core: usa la MISMA llave que en appsettings.json: "Default_Connection"
+builder.Services.AddDbContext<RecetasDBContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("Default_Connection"),
+        sql => sql.EnableRetryOnFailure() // opcional: reintentos ante fallos transitorios
+    )
+);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// Pipeline HTTP
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // útil en desarrollo
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
